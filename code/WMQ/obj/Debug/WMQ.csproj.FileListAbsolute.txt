@@ -1,0 +1,15 @@
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.MDIParent1.resources
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.Properties.Resources.resources
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.csproj.GenerateResource.Cache
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\WMQ.exe
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\WMQ.pdb
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\MyInterface.dll
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\Newtonsoft.Json.dll
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\UDTCommon.dll
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\WeavingSocketServer.dll
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.exe
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.pdb
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.config.resources
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\bin\Debug\port.txt
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.minForm.resources
+D:\WeavingSocket\Example\WMQ\WMQ\WMQ\obj\Debug\WMQ.csprojResolveAssemblyReference.cache
