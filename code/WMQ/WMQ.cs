@@ -36,6 +36,7 @@ namespace WMQ
     public class WMQ
     {
         Dictionary<String, WMQTOPIC> WMQTOPICList = new Dictionary<String, WMQTOPIC>();
+        Dictionary<String, bool> WMQTOPICListbool = new Dictionary<String, bool>();
         LinkedList<WMQueuesoc> WMQueuesoclink = new LinkedList<WMQueuesoc>();
         LinkedList<WMQData> WMQDatalink = new LinkedList<WMQData>();
         List<WMQMODE> listiwtcp = new List<WMQMODE>();
@@ -111,21 +112,10 @@ namespace WMQ
                 {
                     if (WMQTOPICList[key].wdata.Count > 0)
                     {
-                        LinkedList<WMQData> wdata=WMQTOPICList[key].wdata;
-                        int len = wdata.Count;
-                         WMQData[] WMQDatas = new WMQData[len];
-                        wdata.CopyTo(WMQDatas, 0);
-                        LinkedList<Socket> socs = WMQTOPICList[key].ALLsoc;
-                        len = socs.Count;
-                        Socket[] Sockets = new Socket[len];
-                        socs.CopyTo(Sockets, 0);
-                        foreach (WMQData wd in WMQDatas)
+                        if (WMQTOPICListbool[key] == false)
                         {
-                            foreach (Socket soc in Sockets)
-                            {
-                                Send<WMQData>(soc, 0x02, wd);
-                            }
-                            wdata.Remove(wd);
+                            WMQTOPICListbool[key] = true;
+                            System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(sendtopic), key);
                         }
                        
                     }
@@ -134,6 +124,29 @@ namespace WMQ
                 System.Threading.Thread.Sleep(10);
             }
         }
+
+        void sendtopic(object obj)
+        {
+            string key = obj as string;
+            LinkedList<WMQData> wdata = WMQTOPICList[key].wdata;
+            int len = wdata.Count;
+            WMQData[] WMQDatas = new WMQData[len];
+            wdata.CopyTo(WMQDatas, 0);
+            LinkedList<Socket> socs = WMQTOPICList[key].ALLsoc;
+            len = socs.Count;
+            Socket[] Sockets = new Socket[len];
+            socs.CopyTo(Sockets, 0);
+            foreach (WMQData wd in WMQDatas)
+            {
+                foreach (Socket soc in Sockets)
+                {
+                    Send<WMQData>(soc, 0x02, wd);
+                }
+                wdata.Remove(wd);
+            }
+            WMQTOPICListbool[key] = false;
+        }
+
         public bool EXEC(byte command, string data, System.Net.Sockets.Socket soc)
         {
             try
@@ -214,6 +227,7 @@ namespace WMQ
                 WMQTOPIC wtpic = new WMQTOPIC();
                 wtpic.topic = wmqd.to;
                 wtpic.wdata.AddLast(wmqd);
+                WMQTOPICListbool.Add(wmqd.to, false);
                 WMQTOPICList.Add(wmqd.to, wtpic);
             }
             else
@@ -231,6 +245,7 @@ namespace WMQ
                 WMQTOPIC wtpic = new WMQTOPIC();
                 wtpic.topic = wmqd.to;
                 wtpic.ALLsoc.AddLast(wmqd.soc);
+                WMQTOPICListbool.Add(wmqd.to, false);
                 WMQTOPICList.Add(wmqd.to, wtpic);
             }
             else

@@ -9,3 +9,5 @@ D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.csproj.GenerateRe
 D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.exe
 D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.pdb
 D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.csprojResolveAssemblyReference.cache
+D:\WMQ\code\WMQClient\obj\Debug\WMQClient.exe
+D:\WMQ\code\WMQClient\obj\Debug\WMQClient.pdb
