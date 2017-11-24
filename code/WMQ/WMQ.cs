@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -26,9 +27,9 @@ namespace WMQ
     //订阅
     public class WMQTOPIC
     {
-        public LinkedList<WMQData> wdata=new LinkedList<WMQData>();
+        public List<WMQData> wdata=new List<WMQData>();
         public string topic;
-        public LinkedList<Socket> ALLsoc=new LinkedList<Socket> ();
+        public List<Socket> ALLsoc =new List<Socket>();
       
 
     }
@@ -91,7 +92,10 @@ namespace WMQ
 
                             if (wmq.ctime.AddMilliseconds(wmq.Validityperiod) > DateTime.Now && isok == false)
                             {
-                                WMQDatalink.AddLast(wmq);
+                                lock (this)
+                                {
+                                    WMQDatalink.AddLast(wmq);
+                                }
                             }
                             WMQDatalink.RemoveFirst();
                         }
@@ -134,25 +138,30 @@ namespace WMQ
             string key = obj as string;
             try
             {
-              
-                LinkedList<WMQData> wdata = WMQTOPICList[key].wdata;
+
+                List<WMQData> wdata = WMQTOPICList[key].wdata;
                 int len = wdata.Count;
                 WMQData[] WMQDatas = new WMQData[len];
                 wdata.CopyTo(WMQDatas, 0);
-                LinkedList<Socket> socs = WMQTOPICList[key].ALLsoc;
+                List<Socket> socs = WMQTOPICList[key].ALLsoc;
                 len = socs.Count;
                 Socket[] Sockets = new Socket[len];
                 socs.CopyTo(Sockets, 0);
                 foreach (WMQData wd in WMQDatas)
                 {
-                    foreach (Socket soc in Sockets)
+                    if (wd != null)
+                        foreach (Socket soc in Sockets)
+                        {
+                            Send<WMQData>(soc, 0x02, wd);
+                        }
+                    else
                     {
-                        Send<WMQData>(soc, 0x02, wd);
+
                     }
                     wdata.Remove(wd);
                 }
             }
-            catch { }
+            catch(Exception e) { }
             WMQTOPICListbool[key] = false;
         }
 
@@ -180,17 +189,23 @@ namespace WMQ
                     case 1:
                         wmqd = Newtonsoft.Json.JsonConvert.DeserializeObject<WMQData>(data);
                         wmqd.ctime = DateTime.Now;
-                        WMQDatalink.AddLast(wmqd);
+                        lock (this)
+                        {
+                            WMQDatalink.AddLast(wmqd);
+                        }
                         break;
                     case 2:
                         wmqd = Newtonsoft.Json.JsonConvert.DeserializeObject<WMQData>(data);
                         wmqd.ctime = DateTime.Now;
+                        if (wmqd == null)
+                        {
+                        }
                         addtopic(wmqd);
                         break;
 
                 }
             }
-            catch { return false; }
+            catch(Exception e) { return false; }
             return true;
 
         }
@@ -225,19 +240,22 @@ namespace WMQ
                     }
                 }
             }
-            catch { }
+            catch(Exception e){ }
         }
             
         void addtopic(WMQData wmqd)
         {
             try
             {
+                if (wmqd == null)
+                {
 
+                }
                 if (!WMQTOPICList.ContainsKey(wmqd.to))
                 {
                     WMQTOPIC wtpic = new WMQTOPIC();
                     wtpic.topic = wmqd.to;
-                    wtpic.wdata.AddLast(wmqd);
+                    wtpic.wdata.Add(wmqd);
                     WMQTOPICListbool.Add(wmqd.to, false);
                     WMQTOPICList.Add(wmqd.to, wtpic);
                 }
@@ -245,11 +263,12 @@ namespace WMQ
                 {
                     WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
                     wtpic.topic = wmqd.to;
-                    wtpic.wdata.AddLast(wmqd);
+               
+                    wtpic.wdata.Add(wmqd);
                     //WMQTOPICList.Add(wmqd.to, wtpic);
                 }
             }
-            catch { }
+            catch(Exception e) { }
         }
         void addtopicsoc(RegData wmqd)
         {
@@ -259,7 +278,7 @@ namespace WMQ
                 {
                     WMQTOPIC wtpic = new WMQTOPIC();
                     wtpic.topic = wmqd.to;
-                    wtpic.ALLsoc.AddLast(wmqd.soc);
+                    wtpic.ALLsoc.Add(wmqd.soc);
                     WMQTOPICListbool.Add(wmqd.to, false);
                     WMQTOPICList.Add(wmqd.to, wtpic);
                 }
@@ -267,11 +286,11 @@ namespace WMQ
                 {
                     WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
                     wtpic.topic = wmqd.to;
-                    wtpic.ALLsoc.AddLast(wmqd.soc);
+                    wtpic.ALLsoc.Add(wmqd.soc);
                     //WMQTOPICList.Add(wmqd.to, wtpic);
                 }
             }
-            catch { }
+            catch(Exception e) { }
         }
 
         // SortedList<>
