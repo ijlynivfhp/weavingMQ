@@ -106,20 +106,24 @@ namespace WMQ
             while (true)
             {
 
-
-                String[] keys = WMQTOPICList.Keys.ToArray();
-                foreach (string key in keys)
+                try
                 {
-                    if (WMQTOPICList[key].wdata.Count > 0)
+
+                    String[] keys = WMQTOPICList.Keys.ToArray();
+                    foreach (string key in keys)
                     {
-                        if (WMQTOPICListbool[key] == false)
+                        if (WMQTOPICList[key].wdata.Count > 0)
                         {
-                            WMQTOPICListbool[key] = true;
-                            System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(sendtopic), key);
+                            if (WMQTOPICListbool[key] == false)
+                            {
+                                WMQTOPICListbool[key] = true;
+                                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(sendtopic), key);
+                            }
+
                         }
-                       
                     }
                 }
+                catch { }
                     
                 System.Threading.Thread.Sleep(10);
             }
@@ -128,22 +132,27 @@ namespace WMQ
         void sendtopic(object obj)
         {
             string key = obj as string;
-            LinkedList<WMQData> wdata = WMQTOPICList[key].wdata;
-            int len = wdata.Count;
-            WMQData[] WMQDatas = new WMQData[len];
-            wdata.CopyTo(WMQDatas, 0);
-            LinkedList<Socket> socs = WMQTOPICList[key].ALLsoc;
-            len = socs.Count;
-            Socket[] Sockets = new Socket[len];
-            socs.CopyTo(Sockets, 0);
-            foreach (WMQData wd in WMQDatas)
+            try
             {
-                foreach (Socket soc in Sockets)
+              
+                LinkedList<WMQData> wdata = WMQTOPICList[key].wdata;
+                int len = wdata.Count;
+                WMQData[] WMQDatas = new WMQData[len];
+                wdata.CopyTo(WMQDatas, 0);
+                LinkedList<Socket> socs = WMQTOPICList[key].ALLsoc;
+                len = socs.Count;
+                Socket[] Sockets = new Socket[len];
+                socs.CopyTo(Sockets, 0);
+                foreach (WMQData wd in WMQDatas)
                 {
-                    Send<WMQData>(soc, 0x02, wd);
+                    foreach (Socket soc in Sockets)
+                    {
+                        Send<WMQData>(soc, 0x02, wd);
+                    }
+                    wdata.Remove(wd);
                 }
-                wdata.Remove(wd);
             }
+            catch { }
             WMQTOPICListbool[key] = false;
         }
 
@@ -221,40 +230,48 @@ namespace WMQ
             
         void addtopic(WMQData wmqd)
         {
-            
-            if (!WMQTOPICList.ContainsKey(wmqd.to))
+            try
             {
-                WMQTOPIC wtpic = new WMQTOPIC();
-                wtpic.topic = wmqd.to;
-                wtpic.wdata.AddLast(wmqd);
-                WMQTOPICListbool.Add(wmqd.to, false);
-                WMQTOPICList.Add(wmqd.to, wtpic);
+
+                if (!WMQTOPICList.ContainsKey(wmqd.to))
+                {
+                    WMQTOPIC wtpic = new WMQTOPIC();
+                    wtpic.topic = wmqd.to;
+                    wtpic.wdata.AddLast(wmqd);
+                    WMQTOPICListbool.Add(wmqd.to, false);
+                    WMQTOPICList.Add(wmqd.to, wtpic);
+                }
+                else
+                {
+                    WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
+                    wtpic.topic = wmqd.to;
+                    wtpic.wdata.AddLast(wmqd);
+                    //WMQTOPICList.Add(wmqd.to, wtpic);
+                }
             }
-            else
-            {
-                WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
-                wtpic.topic = wmqd.to;
-                wtpic.wdata.AddLast(wmqd);
-                //WMQTOPICList.Add(wmqd.to, wtpic);
-            }
+            catch { }
         }
         void addtopicsoc(RegData wmqd)
         {
-            if (!WMQTOPICList.ContainsKey(wmqd.to))
+            try
             {
-                WMQTOPIC wtpic = new WMQTOPIC();
-                wtpic.topic = wmqd.to;
-                wtpic.ALLsoc.AddLast(wmqd.soc);
-                WMQTOPICListbool.Add(wmqd.to, false);
-                WMQTOPICList.Add(wmqd.to, wtpic);
+                if (!WMQTOPICList.ContainsKey(wmqd.to))
+                {
+                    WMQTOPIC wtpic = new WMQTOPIC();
+                    wtpic.topic = wmqd.to;
+                    wtpic.ALLsoc.AddLast(wmqd.soc);
+                    WMQTOPICListbool.Add(wmqd.to, false);
+                    WMQTOPICList.Add(wmqd.to, wtpic);
+                }
+                else
+                {
+                    WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
+                    wtpic.topic = wmqd.to;
+                    wtpic.ALLsoc.AddLast(wmqd.soc);
+                    //WMQTOPICList.Add(wmqd.to, wtpic);
+                }
             }
-            else
-            {
-                WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
-                wtpic.topic = wmqd.to;
-                wtpic.ALLsoc.AddLast(wmqd.soc);
-                //WMQTOPICList.Add(wmqd.to, wtpic);
-            }
+            catch { }
         }
 
         // SortedList<>
