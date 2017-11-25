@@ -95,6 +95,14 @@ namespace cloud
             System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(ReloadFlies));
             System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(ReloadFliesway));
         }
+        public class ipMaster
+        {
+            public string ip;
+            public bool ismaster;
+            public bool isline;
+
+        }
+        List<ipMaster> iplist = new List<ipMaster>();
         protected void ReloadFlies(object obj)
         {
             try
@@ -102,7 +110,7 @@ namespace cloud
                 CommandItemS.Clear();
                 XmlDocument xml = new XmlDocument();
                 xml.Load("node.xml");
-                List<String> iplist = new List<string>();
+         
                 foreach (XmlNode xn in xml.FirstChild.ChildNodes)
                 {
                     string type = "json";
@@ -117,11 +125,19 @@ namespace cloud
                         ci.Port = Convert.ToInt32(xn.Attributes["port"].Value);
                         ci.CommName = byte.Parse(xn.Attributes["command"].Value);
                         CommandItemS.Add(ci);
-                        foreach (string s in iplist)
-                            if (s == ci.Ip + ":" + ci.Port)
+                        foreach (ipMaster s in iplist)
+                            if (s.ip == ci.Ip + ":" + ci.Port)
                                 isok = false;
                         if (isok)
-                            iplist.Add(ci.Ip + ":" + ci.Port);
+                        {
+                            ipMaster ipm = new ipMaster();
+                            ipm.ip = ci.Ip + ":" + ci.Port;
+                            if (xn.Attributes["ismaster"] == null)
+                                ipm.ismaster = false;
+                            else
+                           ipm.ismaster= Convert.ToBoolean(xn.Attributes["ismaster"].Value);
+                            iplist.Add(ipm);
+                        }
                     }
                 }
                 int countpipeline = iplist.Count * (int)pipeline;
@@ -131,7 +147,7 @@ namespace cloud
                         EventMylog("设置异常", "你所开启的通道不能超过6万，计算方法，不同的（IP+PORT）总数*通道数量。开启当前设置需要：" + countpipeline + "本地连接，此链接不被系统支持。");
                     return;
                 }
-                foreach (string s in iplist)
+                foreach (ipMaster s in iplist)
                 {
                     P2Pclient[,,,] client = new P2Pclient[10, 10, 10, 10];
                     for (int i = (int)pipeline; i > 1; i--)
@@ -141,17 +157,19 @@ namespace cloud
                             temp += "0";
                               im = temp+im;
                         System.Threading.Thread.Sleep(100);
-                          P2Pclient ct = newp2p(s.Split(':')[0], Convert.ToInt32(s.Split(':')[1]));
+                          P2Pclient ct = newp2p(s.ip.Split(':')[0], Convert.ToInt32(s.ip.Split(':')[1]));
                         //P2Pclient ct = new P2Pclient(false);
                       
                             client[int.Parse(im.Substring(0, 1)), int.Parse(im.Substring(1, 1)), int.Parse(im.Substring(2, 1)), int.Parse(im.Substring(3, 1))] = ct;
                        
                     }
                    
-                    client[0,0,0,0]= newp2p(s.Split(':')[0], Convert.ToInt32(s.Split(':')[1]));
+                    client[0,0,0,0]= newp2p(s.ip.Split(':')[0], Convert.ToInt32(s.ip.Split(':')[1]));
+                    client[0, 0, 0, 0].timeoutobjevent -= P2p_timeoutobjevent;
+                    client[0, 0, 0, 0].timeoutobjevent += GateWay_timeoutobjevent;
                     foreach (CommandItem ci in CommandItemS)
                     {
-                        if (s == ci.Ip + ":" + ci.Port)
+                        if (s.ip == ci.Ip + ":" + ci.Port)
                             ci.Client = client;
                     }
                 }
@@ -163,6 +181,78 @@ namespace cloud
                     EventMylog("加载异常", ex.Message);
             }
         }
+
+        private void GateWay_timeoutobjevent(P2Pclient p2pobj)
+        {
+            P2Pclient Client = p2pobj;
+            string master = "";
+
+            if (!Client.Isline)
+            {
+                string ip = p2pobj.IP + ":" + p2pobj.PORT;
+
+                foreach (ipMaster s in iplist)
+                {
+                    if (s.ip == ip)
+                    {
+                        s.isline = false;
+                        break;
+                    }
+                }
+                foreach (CommandItem ci in CommandItemS)
+                {
+                    if (ci.Ip + ":" + ci.Port == ip)
+                    {
+                        ci.ismaster = false;
+                        ci.isline = false;
+
+
+                    }
+                }
+                foreach (ipMaster s in iplist)
+                {
+                    if (s.ip != ip && s.isline)
+                    {
+                        master = s.ip;
+                        break;
+                    }
+                }
+
+
+                foreach (CommandItem ci in CommandItemS)
+                {
+
+                    if (ci.isline)
+                        if (master == ci.Ip + ":" + ci.Port)
+                            if (!ci.ismaster)
+                            {
+
+                                ci.Client[0, 0, 0, 0].send(0xff, "ISmaster");
+                                ci.ismaster = true;
+
+
+                            }
+                }
+                P2p_timeoutobjevent(p2pobj);
+                p2pobj.send(0xff, "slave");
+                foreach (CommandItem ci in CommandItemS)
+                {
+                    if (ci.Ip + ":" + ci.Port == ip)
+                    {
+                        ci.isline = true;
+                    }
+                }
+                foreach (ipMaster s in iplist)
+                {
+                    if (s.ip != ip)
+                    {
+                        s.isline = true;
+                    }
+                }
+            }
+            //这里把新链接的服务，设置为从机
+        }
+
         P2Pclient newp2p(String Ip,int Port)
         {
             P2Pclient p2p = new P2Pclient(false);
@@ -184,15 +274,19 @@ namespace cloud
             return null;
         }
 
-       
 
+        string master="";
         private void P2p_timeoutobjevent(P2Pclient p2pobj)
         {
             P2Pclient Client = p2pobj;
+
             lab1100:
             if (!Client.Isline)
             {
-              
+                string ip = p2pobj.IP + ":" + p2pobj.PORT;
+
+                
+               
                 string port = Client.localprot;
                 if (EventMylog != null)
                     EventMylog("节点重新连接--:", Client.IP + ":" + Client.PORT);
@@ -205,6 +299,8 @@ namespace cloud
                 }
                 else
                 {
+                   
+
                     try
                     {
                         EventMylog("节点重新连接-通知下线-:", Client.IP + ":" + Client.PORT); 
@@ -265,7 +361,7 @@ namespace cloud
         {
             try
             {
-              
+               
                         if (p2pobj.Restart(false))
                         {
                             Client_timeoutobjevent(p2pobj);

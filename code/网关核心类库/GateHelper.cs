@@ -300,6 +300,8 @@ namespace cloud
             get { return commName; }
             set { commName = value; }
         }
+        public bool ismaster=false;
+        public bool isline = true;
         public string Ip
         {
             get
@@ -325,6 +327,9 @@ namespace cloud
 
         P2Pclient[,,,] client = new P2Pclient[10, 10, 10, 10];
         public P2Pclient[,,,] Client { get { return client; } set { client = value; } }
+
+        public bool Ismaster { get ; set ; }
+
         String ip = "";
         int port;
      

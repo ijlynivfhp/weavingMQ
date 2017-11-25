@@ -65,10 +65,10 @@ namespace 统一登录服务
                             i++;
                         
                     }
-                    foreach (WayItem ci in gw.WayItemS)
-                    {
-                        listBox2.Items.Add("ip:" + ci.Ip + "端口：" + ci.Port + "-状态：" + ci.Client.Isline + "-在线人数:" + ci.Num);
-                    }
+                    //foreach (WayItem ci in gw.WayItemS)
+                    //{
+                    //    listBox2.Items.Add("ip:" + ci.Ip + "端口：" + ci.Port + "-状态：" + ci.Client.Isline + "-在线人数:" + ci.Num);
+                    //}
                     toolStripStatusLabel2.Text = "连接人数：" + gw.getnum() + "  ";
                 
             }

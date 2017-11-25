@@ -88,11 +88,11 @@ namespace WMQ
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            toolStripStatusLabel.Text = "连接总数："+ count;
+            toolStripStatusLabel.Text = "连接总数："+ count+ (WMQMANAGE.ISmaster ? "主机运行模式" : "从机运行模式");
             foreach (WMQMODE wm in listiwtcp)
             {
                 wm.mf.listBox1.Items.Clear();
-                wm.mf.listBox1.Items.Add("当前链接数:"+ wm.count);
+                wm.mf.listBox1.Items.Add("当前链接数:"+ wm.count );
             }
         }
 

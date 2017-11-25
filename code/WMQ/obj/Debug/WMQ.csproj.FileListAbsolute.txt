@@ -28,7 +28,6 @@ D:\WMQ\code\WMQ\obj\Debug\WMQ.MDIParent1.resources
 D:\WMQ\code\WMQ\obj\Debug\WMQ.minForm.resources
 D:\WMQ\code\WMQ\obj\Debug\WMQ.Properties.Resources.resources
 D:\WMQ\code\WMQ\obj\Debug\WMQ.csproj.GenerateResource.Cache
-E:\WMQ\code\WMQ\obj\Debug\WMQ.csprojResolveAssemblyReference.cache
 E:\WMQ\code\WMQ\obj\Debug\WMQ.config.resources
 E:\WMQ\code\WMQ\obj\Debug\WMQ.MDIParent1.resources
 E:\WMQ\code\WMQ\obj\Debug\WMQ.minForm.resources
