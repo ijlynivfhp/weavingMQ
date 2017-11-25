@@ -32,40 +32,7 @@ namespace WMQ
         private void OpenFile(object sender, EventArgs e)
         {
            
-            System.IO.StreamReader sr = new System.IO.StreamReader("port.txt");
-            while (!sr.EndOfStream)
-            {
-                String str = sr.ReadLine();
-                minForm childForm = new minForm();
-                childForm.Name = str;
-                childForm.MdiParent = this;
-                childForm.Text = "端口：" + str.Split(':')[0]+"--类型："+ str.Split(':')[1];
-                childForm.Show();
-                IWeaveTcpBase wps=null;
-                if (str.Split(':')[1]=="socket")
-                 wps = new WeaveP2Server();
-                if (str.Split(':')[1] == "websocket")
-                    wps = new WeaveWebServer();
-                if (str.Split(':')[1] == "http")
-                    wps = new HttpServer(Convert.ToInt32(str.Split(':')[0]));
-
-                wps.waveReceiveEvent += Wps_waveReceiveEvent;
-                wps.weaveDeleteSocketListEvent += Wps_weaveDeleteSocketListEvent;
-                wps.weaveUpdateSocketListEvent += Wps_weaveUpdateSocketListEvent;
-                wps.Start(Convert.ToInt32(str.Split(':')[0]));
-                //  wps.GetNetworkItemCount();
-                WMQMODE wm = new WMQMODE();
-                wm.iwtb = wps;
-                wm.mf = childForm;
-                listiwtcp.Add(wm);
-                listminForm.Add(childForm);
-                childForm.listBox1.Items.Add("监听已启动。。。。");
-               
-            }
-            sr.Close();
-            timer1.Start();
-            openToolStripMenuItem.Enabled = false;
-            LayoutMdi(MdiLayout.TileHorizontal);
+           
         }
         int count = 0;
         private void Wps_weaveUpdateSocketListEvent(System.Net.Sockets.Socket soc)
@@ -105,7 +72,7 @@ namespace WMQ
       
         private void MDIParent1_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         private void 退出xToolStripMenuItem_Click(object sender, EventArgs e)
@@ -127,6 +94,58 @@ namespace WMQ
                 wm.mf.listBox1.Items.Clear();
                 wm.mf.listBox1.Items.Add("当前链接数:"+ wm.count);
             }
+        }
+
+        void start(bool ismaster)
+        {
+            WMQMANAGE.ISmaster = ismaster;
+            System.IO.StreamReader sr = new System.IO.StreamReader("port.txt");
+            while (!sr.EndOfStream)
+            {
+                String str = sr.ReadLine();
+                minForm childForm = new minForm();
+                childForm.Name = str;
+                childForm.MdiParent = this;
+                childForm.Text = "端口：" + str.Split(':')[0] + "--类型：" + str.Split(':')[1];
+                childForm.Show();
+                IWeaveTcpBase wps = null;
+                if (str.Split(':')[1] == "socket")
+                    wps = new WeaveP2Server();
+                if (str.Split(':')[1] == "websocket")
+                    wps = new WeaveWebServer();
+                if (str.Split(':')[1] == "http")
+                    wps = new HttpServer(Convert.ToInt32(str.Split(':')[0]));
+
+                wps.waveReceiveEvent += Wps_waveReceiveEvent;
+                wps.weaveDeleteSocketListEvent += Wps_weaveDeleteSocketListEvent;
+                wps.weaveUpdateSocketListEvent += Wps_weaveUpdateSocketListEvent;
+                wps.Start(Convert.ToInt32(str.Split(':')[0]));
+                //  wps.GetNetworkItemCount();
+                WMQMODE wm = new WMQMODE();
+                wm.iwtb = wps;
+                wm.mf = childForm;
+                listiwtcp.Add(wm);
+                listminForm.Add(childForm);
+                childForm.listBox1.Items.Add("监听已启动。。。。");
+
+            }
+            sr.Close();
+            timer1.Start();
+            openToolStripMenuItem.Enabled = false;
+            LayoutMdi(MdiLayout.TileHorizontal);
+        }
+
+        private void 主机启动ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            start(true);
+            this.toolStripStatusLabel.Text = "现在是主机运行模式";
+
+        }
+
+        private void 从机启动ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            start(false);
+            this.toolStripStatusLabel.Text = "现在是从机运行模式";
         }
     }
 }

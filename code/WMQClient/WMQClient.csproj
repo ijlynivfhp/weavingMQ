@@ -50,10 +50,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeavingSocketclient, Version=2.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WeavingSocketclient.2.0.0.5\lib\net40\WeavingSocketclient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Form1.cs">
@@ -88,6 +84,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\weaving-socket\Code\TCPclient\TCPclient.csproj">
+      <Project>{dc9b4157-68c6-4f52-b8e4-ec2e4bc1d237}</Project>
+      <Name>TCPclient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,31 +9,7 @@ using WeaveBase;
 
 namespace WMQ
 {
-    public class WMQMODE
-    {
-        public IWeaveTcpBase iwtb;
-        public int count = 0;
-        public minForm mf;
-    }
 
-    
-    //点对点
-    public class WMQueuesoc
-    {
-        public string token;
-        public Socket soc;
-
-    }
-    //订阅
-    public class WMQTOPIC
-    {
-        public List<WMQData> wdata=new List<WMQData>();
-        public string topic;
-        public List<Socket> ALLsoc =new List<Socket>();
-      
-
-    }
-    
     public class WMQ
     {
         Dictionary<String, WMQTOPIC> WMQTOPICList = new Dictionary<String, WMQTOPIC>();
@@ -41,6 +17,8 @@ namespace WMQ
         LinkedList<WMQueuesoc> WMQueuesoclink = new LinkedList<WMQueuesoc>();
         LinkedList<WMQData> WMQDatalink = new LinkedList<WMQData>();
         List<WMQMODE> listiwtcp = new List<WMQMODE>();
+        public bool ISmaster { get ; set; }
+
         public WMQ(List<WMQMODE> _listiwtcp)
         {
             listiwtcp = _listiwtcp;
@@ -49,7 +27,7 @@ namespace WMQ
             System.Threading.Thread t1 = new System.Threading.Thread(new System.Threading.ThreadStart(Queuego));
             t1.Start();
         }
-        public bool Send<T>(Socket soc, byte command, T t)
+        public bool Send<T>(Socket soc, byte command, T t,String fromtoken)
         {
             try
             {
@@ -58,7 +36,7 @@ namespace WMQ
                     if (wm.iwtb.Port == ((System.Net.IPEndPoint)soc.LocalEndPoint).Port)
                     {
                         String str = Newtonsoft.Json.JsonConvert.SerializeObject(t);
-                        return wm.iwtb.Send(soc, command, str);
+                        return wm.iwtb.Send(soc, command, fromtoken+str);
 
                     }
                 }
@@ -81,11 +59,12 @@ namespace WMQ
                             WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
                             WMQueuesoclink.CopyTo(wmqsoc, 0);
                             bool isok = false;
+                            if(ISmaster)
                             foreach (WMQueuesoc wmqs in wmqsoc)
                             {
                                 if (wmq.to == wmqs.token)
                                 {
-                                    isok = Send<WMQData>(wmqs.soc, 0x01, wmq);
+                                    isok = Send<WMQData>(wmqs.soc, 0x01, wmq, wmqs.fromtoken);
                                     break;
                                 }
                             }
@@ -143,16 +122,17 @@ namespace WMQ
                 int len = wdata.Count;
                 WMQData[] WMQDatas = new WMQData[len];
                 wdata.CopyTo(WMQDatas, 0);
-                List<Socket> socs = WMQTOPICList[key].ALLsoc;
+                List<Socketway> socs = WMQTOPICList[key].ALLsoc;
                 len = socs.Count;
-                Socket[] Sockets = new Socket[len];
+                Socketway[] Sockets = new Socketway[len];
                 socs.CopyTo(Sockets, 0);
                 foreach (WMQData wd in WMQDatas)
                 {
-                    if (wd != null)
-                        foreach (Socket soc in Sockets)
+                    if (wd != null && ISmaster==true)
+                        foreach (Socketway soc in Sockets)
                         {
-                            Send<WMQData>(soc, 0x02, wd);
+                          
+                            Send<WMQData>(soc.soc, 0x02,  wd, soc.from);
                         }
                     else
                     {
@@ -169,21 +149,27 @@ namespace WMQ
         {
             try
             {
+                String token = "";
+                if (data.IndexOf('{') > 0)
+                {
+                    token = data.Substring(0, data.IndexOf('{'));
+                    data = data.Substring(data.IndexOf('{'));
+                }
+                
                 WMQData wmqd = new WMQData();
                 switch (command)
                 {
                     case 0:
                         RegData rd = Newtonsoft.Json.JsonConvert.DeserializeObject<RegData>(data);
+                        rd.from = token;
+                        rd.soc = soc;
                         if (rd.type == "topic")
                         {
-                            rd.soc = soc;
                             addtopicsoc(rd);
                         }
                         else
                         {
-                            WMQueuesoc wq = new WMQueuesoc();
-                            wq.token = rd.to; wq.soc = soc;
-                            WMQueuesoclink.AddLast(wq);
+                            Addqueuesoc(rd);
                         }
                         break;
                     case 1:
@@ -202,6 +188,21 @@ namespace WMQ
                         }
                         addtopic(wmqd);
                         break;
+                    case 0xff:
+                        if (data.IndexOf("out") >= 0)
+                        {
+                            string fromtoken = data.Split('|')[1];
+                            deletesocbyfromtoken(fromtoken);
+                        }
+                        if (data.IndexOf("ISmaster") >= 0)
+                        {
+                            ISmaster = true;
+                        }
+                        if (data.IndexOf("slave") >= 0)
+                        {
+                            ISmaster = false;
+                        }
+                        break;
 
                 }
             }
@@ -209,6 +210,93 @@ namespace WMQ
             return true;
 
         }
+
+        void Addqueuesoc(RegData rd)
+        {
+            int len = WMQueuesoclink.Count;
+            WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
+            WMQueuesoclink.CopyTo(wmqsoc, 0);
+
+            foreach (WMQueuesoc wmqs in wmqsoc)
+            {
+                if (wmqs != null)
+                {
+                    if (rd.from != "")
+                        if (wmqs.fromtoken == rd.from)
+                        {
+
+                            WMQueuesoclink.Remove(wmqs);
+
+                        }
+                        else
+                        {
+                            if (wmqs.soc == rd.soc)
+                                WMQueuesoclink.Remove(wmqs);
+                        }
+
+                }
+            }
+            WMQueuesoc wq = new WMQueuesoc();
+            wq.token = rd.to; wq.soc = rd.soc;
+            wq.fromtoken = rd.from;
+            WMQueuesoclink.AddLast(wq);
+            return ;
+        }
+
+        #region 移除用户
+        public void deletesocbyfromtoken(string fromtoken)
+        {
+            try
+            {
+                String[] keys = WMQTOPICList.Keys.ToArray();
+                foreach (string key in keys)
+                {
+                    if (WMQTOPICList[key].ALLsoc.Count > 0)
+                    {
+                        try
+                        {
+                            int len1 = WMQTOPICList[key].ALLsoc.Count;
+                            Socketway[] wsoc = new Socketway[len1];
+                            WMQTOPICList[key].ALLsoc.CopyTo(wsoc, 0);
+                            foreach (Socketway sw in wsoc)
+                            {
+                                if (sw != null)
+                                    if (sw.from == fromtoken)
+                                    {
+                                        WMQTOPICList[key].ALLsoc.Remove(sw);
+                                        break;
+                                    }
+                            }
+
+                        }
+                        catch { }
+                    }
+                }
+
+
+            }
+            catch (Exception e) { }
+            try
+            {
+
+                int len = WMQueuesoclink.Count;
+                WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
+                WMQueuesoclink.CopyTo(wmqsoc, 0);
+
+                foreach (WMQueuesoc wmqs in wmqsoc)
+                {
+                    if (wmqs != null)
+                        if (wmqs.fromtoken == fromtoken)
+                        {
+
+                            WMQueuesoclink.Remove(wmqs);
+                            return;
+                        }
+                }
+            }
+            catch { }
+        }
+
         public void deletesoc(Socket soc)
         {
             try
@@ -220,11 +308,29 @@ namespace WMQ
                     {
                         try
                         {
-                            WMQTOPICList[key].ALLsoc.Remove(soc);
+                            int len1 = WMQTOPICList[key].ALLsoc.Count;
+                            Socketway[] wsoc = new Socketway[len1];
+                            WMQTOPICList[key].ALLsoc.CopyTo(wsoc, 0);
+                            foreach (Socketway sw in wsoc)
+                            {
+                                if (sw != null)
+                                    if (sw.soc == soc)
+                                    {
+                                        WMQTOPICList[key].ALLsoc.Remove(sw);
+                                        // break;
+                                    }
+                            }
+
                         }
                         catch { }
                     }
                 }
+
+
+            }
+            catch (Exception e) { }
+            try
+            {
 
                 int len = WMQueuesoclink.Count;
                 WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
@@ -232,17 +338,22 @@ namespace WMQ
 
                 foreach (WMQueuesoc wmqs in wmqsoc)
                 {
-                    if (wmqs.soc == soc)
-                    {
+                    if (wmqs != null)
+                        if (wmqs.soc == soc)
+                        {
 
-                        WMQueuesoclink.Remove(wmqs);
-                        return;
-                    }
+                            WMQueuesoclink.Remove(wmqs);
+                            return;
+                        }
                 }
             }
-            catch(Exception e){ }
+            catch { }
         }
-            
+        #endregion
+
+        #region 加入TOPIC
+
+        
         void addtopic(WMQData wmqd)
         {
             try
@@ -278,21 +389,28 @@ namespace WMQ
                 {
                     WMQTOPIC wtpic = new WMQTOPIC();
                     wtpic.topic = wmqd.to;
-                    wtpic.ALLsoc.Add(wmqd.soc);
+                    Socketway sw = new Socketway();
+                    sw.soc = wmqd.soc;
+                    sw.from = wmqd.from;
+                    wtpic.ALLsoc.Add(sw);
                     WMQTOPICListbool.Add(wmqd.to, false);
                     WMQTOPICList.Add(wmqd.to, wtpic);
                 }
                 else
                 {
+                  
                     WMQTOPIC wtpic = WMQTOPICList[wmqd.to];
                     wtpic.topic = wmqd.to;
-                    wtpic.ALLsoc.Add(wmqd.soc);
+                    Socketway sw = new Socketway();
+                    sw.soc = wmqd.soc;
+                    sw.from = wmqd.from;
+                    wtpic.ALLsoc.Add(sw);
                     //WMQTOPICList.Add(wmqd.to, wtpic);
                 }
             }
             catch(Exception e) { }
         }
-
+        #endregion
         // SortedList<>
 
     }

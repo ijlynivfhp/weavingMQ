@@ -44,8 +44,8 @@ namespace WMQClient
             label4.Invoke(new EventHandler(delegate { label4.Text = (count).ToString(); }));
         }
 
-        WMQclient wmqcl = new WMQclient("127.0.0.1", 8989, WMQType.topic);
-        WMQclient wmqcl2 = new WMQclient("127.0.0.1", 8989, WMQType.topic);
+        WMQclient wmqcl = new WMQclient("127.0.0.1", 11001, WMQType.topic);
+        WMQclient wmqcl2 = new WMQclient("127.0.0.1", 11001, WMQType.topic);
         private void button1_Click(object sender, EventArgs e)
         {
             System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(send));

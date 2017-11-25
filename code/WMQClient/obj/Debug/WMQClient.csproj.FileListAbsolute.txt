@@ -11,3 +11,16 @@ D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.pdb
 D:\WeavingSocket\Example\WMQ\WMQ\WMQClient\obj\Debug\WMQClient.csprojResolveAssemblyReference.cache
 D:\WMQ\code\WMQClient\obj\Debug\WMQClient.exe
 D:\WMQ\code\WMQClient\obj\Debug\WMQClient.pdb
+E:\WMQ\code\WMQClient\bin\Debug\WMQClient.exe
+E:\WMQ\code\WMQClient\bin\Debug\WMQClient.pdb
+E:\WMQ\code\WMQClient\bin\Debug\MyInterface.dll
+E:\WMQ\code\WMQClient\bin\Debug\Newtonsoft.Json.dll
+E:\WMQ\code\WMQClient\bin\Debug\WeavingSocketclient.dll
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.csprojResolveAssemblyReference.cache
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.Form1.resources
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.Properties.Resources.resources
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.csproj.GenerateResource.Cache
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.csproj.CoreCompileInputs.cache
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.exe
+E:\WMQ\code\WMQClient\obj\Debug\WMQClient.pdb
+E:\WMQ\code\WMQClient\bin\Debug\WeavingSocketclient.pdb
