@@ -216,7 +216,9 @@ namespace WMQ
             int len = WMQueuesoclink.Count;
             WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
             WMQueuesoclink.CopyTo(wmqsoc, 0);
-
+            WMQueuesoc wq = new WMQueuesoc();
+            wq.token = rd.to; wq.soc = rd.soc;
+            wq.fromtoken = rd.from;
             foreach (WMQueuesoc wmqs in wmqsoc)
             {
                 if (wmqs != null)
@@ -236,9 +238,7 @@ namespace WMQ
 
                 }
             }
-            WMQueuesoc wq = new WMQueuesoc();
-            wq.token = rd.to; wq.soc = rd.soc;
-            wq.fromtoken = rd.from;
+         
             WMQueuesoclink.AddLast(wq);
             return ;
         }
