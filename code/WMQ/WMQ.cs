@@ -14,8 +14,8 @@ namespace WMQ
     {
         Dictionary<String, WMQTOPIC> WMQTOPICList = new Dictionary<String, WMQTOPIC>();
         Dictionary<String, bool> WMQTOPICListbool = new Dictionary<String, bool>();
-        LinkedList<WMQueuesoc> WMQueuesoclink = new LinkedList<WMQueuesoc>();
-        LinkedList<WMQData> WMQDatalink = new LinkedList<WMQData>();
+        List<WMQueuesoc> WMQueuesoclink = new List<WMQueuesoc>();
+        List<WMQData> WMQDatalink = new List<WMQData>();
         List<WMQMODE> listiwtcp = new List<WMQMODE>();
         public bool ISmaster { get ; set; }
 
@@ -52,7 +52,7 @@ namespace WMQ
                 {
                     if (WMQDatalink.Count > 0)
                     {
-                        WMQData wmq = WMQDatalink.First();
+                        WMQData wmq = WMQDatalink[0];
                         if (wmq != null)
                         {
                             int len = WMQueuesoclink.Count;
@@ -71,12 +71,11 @@ namespace WMQ
 
                             if (wmq.ctime.AddMilliseconds(wmq.Validityperiod) > DateTime.Now && isok == false)
                             {
-                                lock (this)
-                                {
-                                    WMQDatalink.AddLast(wmq);
-                                }
+                                
+                                    WMQDatalink.Add(wmq);
+                                
                             }
-                            WMQDatalink.RemoveFirst();
+                            WMQDatalink.RemoveAt(0);
                         }
                     }
                 }
@@ -177,7 +176,7 @@ namespace WMQ
                         wmqd.ctime = DateTime.Now;
                         lock (this)
                         {
-                            WMQDatalink.AddLast(wmqd);
+                            WMQDatalink.Add(wmqd);
                         }
                         break;
                     case 2:
@@ -214,32 +213,44 @@ namespace WMQ
         void Addqueuesoc(RegData rd)
         {
             int len = WMQueuesoclink.Count;
-            WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
-            WMQueuesoclink.CopyTo(wmqsoc, 0);
             WMQueuesoc wq = new WMQueuesoc();
             wq.token = rd.to; wq.soc = rd.soc;
-            wq.fromtoken = rd.from;
-            foreach (WMQueuesoc wmqs in wmqsoc)
+            if (len > 0)
             {
-                if (wmqs != null)
+                WMQueuesoc[] wmqsoc = new WMQueuesoc[len];
+                WMQueuesoclink.CopyTo(wmqsoc, 0);
+
+                wq.fromtoken = rd.from;
+                foreach (WMQueuesoc wmqs in wmqsoc)
                 {
-                    if (rd.from != "")
-                        if (wmqs.fromtoken == rd.from)
-                        {
+                    if (wmqs != null)
+                    {
+                        if (rd.from != "")
+                            if (wmqs.fromtoken == rd.from)
+                            {
 
-                            WMQueuesoclink.Remove(wmqs);
+                                WMQueuesoclink.Remove(wmqs);
 
-                        }
+                            }
+                        if (wmqs.token == rd.to)
+                        { WMQueuesoclink.Remove(wmqs); }
                         else
                         {
                             if (wmqs.soc == rd.soc)
                                 WMQueuesoclink.Remove(wmqs);
                         }
 
+                    }
                 }
             }
-         
-            WMQueuesoclink.AddLast(wq);
+            try
+            {
+                WMQueuesoclink.Add(wq);
+            }
+            catch
+            {
+                WMQueuesoclink.Add(wq);
+            }
             return ;
         }
 
