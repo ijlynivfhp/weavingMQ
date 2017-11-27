@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMQ", "WMQ\WMQ.csproj", "{E3E4775D-8FDC-4ADD-8FF9-F058BB08ED7D}"
 EndProject
@@ -17,9 +17,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMQGetway", "WMQGetway\WMQG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用TCP云服务类库", "网关核心类库\通用TCP云服务类库.csproj", "{BCB76C92-15DD-436C-9B5C-6D8D9671FA88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaveCore", "..\..\weaving-socket\Code\MyInterface\WeaveCore.csproj", "{B8D521E5-9073-4B32-A7A7-F415E623F67C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaveCore", "MyInterface\WeaveCore.csproj", "{B8D521E5-9073-4B32-A7A7-F415E623F67C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPclient", "..\..\weaving-socket\Code\TCPclient\TCPclient.csproj", "{DC9B4157-68C6-4F52-B8E4-EC2E4BC1D237}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPclient", "TCPclient\TCPclient.csproj", "{DC9B4157-68C6-4F52-B8E4-EC2E4BC1D237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

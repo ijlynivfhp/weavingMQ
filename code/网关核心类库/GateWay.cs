@@ -680,11 +680,13 @@ namespace cloud
                             P2Pclient p2ptemp= GateHelper.GetP2Pclient(client, soc, Pipeline);
                             if (p2ptemp != null)
                             {
-                                if (!p2ptemp.Isline)
-                                { p2psev.Send(soc, 0xff, "你所请求的服务暂不能使用，已断开连接！");}
-                                if (!p2ptemp.send(command, Token+ data))
+                                if (p2ptemp.Isline)
                                 {
-                                    p2psev.Send(soc, 0xff, "你所请求的服务暂不能使用，发送错误。" );
+                                   
+                                    if (!p2ptemp.send(command, Token + data))
+                                    {
+                                        p2psev.Send(soc, 0xff, "你所请求的服务暂不能使用，发送错误。");
+                                    }
                                 }
 
                             }

@@ -93,7 +93,7 @@
     <Content Include="nodeway.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\weaving-socket\Code\TCPclient\TCPclient.csproj">
+    <ProjectReference Include="..\TCPclient\TCPclient.csproj">
       <Project>{dc9b4157-68c6-4f52-b8e4-ec2e4bc1d237}</Project>
       <Name>TCPclient</Name>
     </ProjectReference>

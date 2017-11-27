@@ -91,3 +91,14 @@ E:\WMQ\code\网关核心类库\bin\Debug\UDTCommon.dll
 E:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketclient.dll
 E:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketServer.dll
 E:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketclient.pdb
+D:\WMQ\code\网关核心类库\bin\Debug\TCPCloud.dll
+D:\WMQ\code\网关核心类库\bin\Debug\TCPCloud.pdb
+D:\WMQ\code\网关核心类库\bin\Debug\MyInterface.dll
+D:\WMQ\code\网关核心类库\bin\Debug\Newtonsoft.Json.dll
+D:\WMQ\code\网关核心类库\bin\Debug\UDTCommon.dll
+D:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketclient.dll
+D:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketServer.dll
+D:\WMQ\code\网关核心类库\bin\Debug\WeavingSocketclient.pdb
+D:\WMQ\code\网关核心类库\obj\Debug\通用TCP云服务类库.csprojResolveAssemblyReference.cache
+D:\WMQ\code\网关核心类库\obj\Debug\TCPCloud.dll
+D:\WMQ\code\网关核心类库\obj\Debug\TCPCloud.pdb

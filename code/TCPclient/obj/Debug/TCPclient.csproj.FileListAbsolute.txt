@@ -50,3 +50,11 @@ E:\weaving-socket\Code\TCPclient\obj\Debug\TCPclient.csprojResolveAssemblyRefere
 E:\weaving-socket\Code\TCPclient\obj\Debug\TCPclient.csproj.CoreCompileInputs.cache
 E:\weaving-socket\Code\TCPclient\obj\Debug\WeavingSocketclient.dll
 E:\weaving-socket\Code\TCPclient\obj\Debug\WeavingSocketclient.pdb
+D:\WMQ\code\TCPclient\bin\Debug\WeavingSocketclient.dll
+D:\WMQ\code\TCPclient\bin\Debug\WeavingSocketclient.pdb
+D:\WMQ\code\TCPclient\bin\Debug\MyInterface.dll
+D:\WMQ\code\TCPclient\bin\Debug\Newtonsoft.Json.dll
+D:\WMQ\code\TCPclient\bin\Debug\MyInterface.pdb
+D:\WMQ\code\TCPclient\obj\Debug\TCPclient.csprojResolveAssemblyReference.cache
+D:\WMQ\code\TCPclient\obj\Debug\WeavingSocketclient.dll
+D:\WMQ\code\TCPclient\obj\Debug\WeavingSocketclient.pdb

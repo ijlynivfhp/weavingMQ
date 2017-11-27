@@ -25,3 +25,8 @@ E:\weaving-socket\Code\MyInterface\bin\Debug\Newtonsoft.Json.dll
 E:\weaving-socket\Code\MyInterface\obj\Debug\WeaveCore.csproj.CoreCompileInputs.cache
 E:\weaving-socket\Code\MyInterface\obj\Debug\MyInterface.dll
 E:\weaving-socket\Code\MyInterface\obj\Debug\MyInterface.pdb
+D:\WMQ\code\MyInterface\bin\Debug\MyInterface.dll
+D:\WMQ\code\MyInterface\bin\Debug\MyInterface.pdb
+D:\WMQ\code\MyInterface\obj\Debug\WeaveCore.csprojResolveAssemblyReference.cache
+D:\WMQ\code\MyInterface\obj\Debug\MyInterface.dll
+D:\WMQ\code\MyInterface\obj\Debug\MyInterface.pdb

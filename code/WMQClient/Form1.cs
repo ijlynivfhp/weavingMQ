@@ -67,8 +67,8 @@ namespace WMQClient
             System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(sendQueue));
 
         }
-        WMQclient wmqcl3 = new WMQclient("127.0.0.1", 8989, WMQType.Queue);
-        WMQclient wmqcl4 = new WMQclient("127.0.0.1", 8989, WMQType.Queue);
+        WMQclient wmqcl3 = new WMQclient("127.0.0.1", 11001, WMQType.Queue);
+        WMQclient wmqcl4 = new WMQclient("127.0.0.1", 11001, WMQType.Queue);
         void sendQueue(object obj)
         {
 
