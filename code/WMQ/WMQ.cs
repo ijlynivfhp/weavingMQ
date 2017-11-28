@@ -69,7 +69,7 @@ namespace WMQ
                                 }
                             }
 
-                            if (wmq.ctime.AddMilliseconds(wmq.Validityperiod) > DateTime.Now && isok == false)
+                            if (!isok)
                             {
                                 
                                     WMQDatalink.Add(wmq);
@@ -174,10 +174,9 @@ namespace WMQ
                     case 1:
                         wmqd = Newtonsoft.Json.JsonConvert.DeserializeObject<WMQData>(data);
                         wmqd.ctime = DateTime.Now;
-                        lock (this)
-                        {
+                        
                             WMQDatalink.Add(wmqd);
-                        }
+                         
                         break;
                     case 2:
                         wmqd = Newtonsoft.Json.JsonConvert.DeserializeObject<WMQData>(data);
@@ -373,6 +372,7 @@ namespace WMQ
                 {
 
                 }
+                wmqd.id = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 if (!WMQTOPICList.ContainsKey(wmqd.to))
                 {
                     WMQTOPIC wtpic = new WMQTOPIC();
@@ -403,6 +403,7 @@ namespace WMQ
                     Socketway sw = new Socketway();
                     sw.soc = wmqd.soc;
                     sw.from = wmqd.from;
+                    
                     wtpic.ALLsoc.Add(sw);
                     WMQTOPICListbool.Add(wmqd.to, false);
                     WMQTOPICList.Add(wmqd.to, wtpic);

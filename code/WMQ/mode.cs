@@ -9,9 +9,8 @@ using WeaveBase;
 namespace WMQ
 {
     public class WMQData
-    {
-        [JsonIgnore]
-        String id;
+    { 
+        public String id;
         public String to;
         public String message;
         [JsonIgnore]
@@ -19,7 +18,9 @@ namespace WMQ
         //毫秒
         public int Validityperiod;
         public string form;
+        public DataConfirm DC = DataConfirm.Send;
     }
+    public enum  DataConfirm { Send , Wait }
     public class RegData
     {
         public string to;
