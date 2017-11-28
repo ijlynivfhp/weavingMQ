@@ -341,9 +341,13 @@ namespace cloud
         public void setconn(ConnObj cb)
         {
             IPEndPoint clientipe = (IPEndPoint)cb.Soc.RemoteEndPoint;
-
+            llbb11:
             string key = clientipe.Address.ToString() + ":" + clientipe.Port;
             Connlist.Add(key,cb);
+            if (Connlist.ContainsKey(key))
+                return;
+            else
+                goto llbb11;
         }
         public void removeconn(Socket soc)
         {
